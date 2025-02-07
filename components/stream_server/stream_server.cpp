@@ -7,6 +7,7 @@
 
 #include "esphome/components/network/util.h"
 #include "esphome/components/socket/socket.h"
+#include "esphome/components/socket/headers.h"
 
 static const char *TAG = "stream_server";
 
@@ -76,6 +77,8 @@ void StreamServerComponent::accept() {
         return;
 
     socket->setblocking(false);
+    int enable = 1;
+    socket->setsockopt(SOCK_STREAM, TCP_NODELAY, &enable, sizeof(int));
     std::string identifier = socket->getpeername();
     this->clients_.emplace_back(std::move(socket), identifier, this->buf_head_);
     ESP_LOGD(TAG, "New client connected from %s", identifier.c_str());
